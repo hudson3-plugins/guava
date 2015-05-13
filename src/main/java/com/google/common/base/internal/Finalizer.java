@@ -24,6 +24,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Thread that finalizes referents. All references should implement
@@ -54,6 +56,17 @@ public class Finalizer implements Runnable {
   /** Name of FinalizableReference.class. */
   private static final String FINALIZABLE_REFERENCE
       = "com.google.common.base.FinalizableReference";
+  
+  private static class Memo {
+      Finalizer finalizer;
+      Thread thread;
+      public Memo(Finalizer finalizer, Thread thread) {
+          this.finalizer = finalizer;
+          this.thread = thread;
+      }
+  }
+  
+  private static ArrayList<Memo> memos = new ArrayList<Memo>();
 
   /**
    * Starts the Finalizer thread. FinalizableReferenceQueue calls this method
@@ -86,6 +99,7 @@ public class Finalizer implements Runnable {
     Thread thread = new Thread(finalizer);
     thread.setName(Finalizer.class.getName());
     thread.setDaemon(true);
+    memos.add(new Memo(finalizer, thread));
 
     try {
       if (inheritableThreadLocals != null) {
@@ -119,6 +133,28 @@ public class Finalizer implements Runnable {
     // Keep track of the FRQ that started us so we know when to stop.
     this.frqReference = frqReference;
   }
+  
+  private boolean keepRunning = true;
+  
+  private void stopRunning() {
+      keepRunning = false;
+  }
+  
+  public static void cleanupThreads(ClassLoader contextClassLoader) {
+      for (Iterator<Memo> it = memos.iterator(); it.hasNext(); ) {
+          Memo memo = it.next();
+          if (memo.thread.getContextClassLoader() == contextClassLoader) {
+              if (memo.thread.isAlive()) {
+                  memo.finalizer.stopRunning();
+                  memo.thread.interrupt();
+                  logger.log(Level.INFO, "Guava finalizer thread "+memo.thread+" stopped");
+              }
+              it.remove();
+          } else {
+              logger.log(Level.INFO, "Guava finalizer thread "+memo.thread+" does not have matching contextClassLoader, not stopped");
+          }
+      }
+  }
 
   /**
    * Loops continuously, pulling references off the queue and cleaning them up.
@@ -126,7 +162,7 @@ public class Finalizer implements Runnable {
   @SuppressWarnings("InfiniteLoopStatement")
   @Override
   public void run() {
-    while (true) {
+    while (keepRunning) {
       try {
         if (!cleanUp(queue.remove())) {
           break;

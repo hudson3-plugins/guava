@@ -5,9 +5,11 @@
     <artifactId>guava-parent</artifactId>
     <version>14.0.1</version>
   </parent>
-  <groupId>org.hudsonci.lib</groupId>
+  <groupId>org.hudsonci.lib.guava</groupId>
   <artifactId>guava</artifactId>
+  <version>14.0.1-SNAPSHOT</version>
   <name>Guava: Google Core Libraries for Java</name>
+  <url>http://hudson-ci.org/</url>
   <packaging>bundle</packaging>
   <description>
     Guava is a suite of core and expanded libraries that include
@@ -16,6 +18,8 @@
  
     Guava has two code dependencies - javax.annotation
     per the JSR-305 spec and javax.inject per the JSR-330 spec.
+    
+    This is a fork of Guava 14.0.1 for Hudson.
   </description>
   <dependencies>
     <dependency>
@@ -49,7 +53,7 @@
         </executions>
         <configuration>
           <instructions>
-            <Export-Package>!com.google.common.base.internal,com.google.common.*</Export-Package>
+            <Export-Package>com.google.common.*</Export-Package>
             <Import-Package>
               javax.annotation;resolution:=optional,
               javax.inject;resolution:=optional,
@@ -60,7 +64,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
+        <version>3.1</version>
         <configuration>
           <source>1.6</source>
           <target>1.6</target>
@@ -136,9 +140,50 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.1</version>
+        <configuration>
+          <!-- enable release profile during the release, create IPS package, and sign bits. -->
+          <prepareVerifyArgs>-P release,sign</prepareVerifyArgs>
+          <goals>-DskipTests javadoc:javadoc deploy javadoc:aggregate</goals>
+          <pushChanges>false</pushChanges>
+          <localCheckout>true</localCheckout>
+        </configuration>
+      </plugin>
     </plugins>
     <finalName>${project.artifactId}-${project.version}</finalName>
-    <sourceDirectory>src</sourceDirectory>
-    <testSourceDirectory>disabled</testSourceDirectory>
+    <!--sourceDirectory>src</sourceDirectory>
+    <testSourceDirectory>disabled</testSourceDirectory-->
   </build>
+  <distributionManagement>
+    <snapshotRepository>
+      <id>sonatype-nexus-snapshots</id>
+      <name>Sonatype Nexus Snapshots</name>
+      <url>${sonatypeOssDistMgmtSnapshotsUrl}</url>
+    </snapshotRepository>
+    <repository>
+      <id>sonatype-nexus-staging</id>
+      <name>Nexus Staging Repository</name>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
+  <developers>
+    <developer>
+        <id>google</id>
+        <name>Google</name>
+    </developer>
+    <developer>
+      <name>Bob Foster</name>
+      <id>bobfoster</id>
+      <email>bobfoster@gmail.com</email>
+    </developer>
+  </developers>
+  <licenses>
+    <license>
+      <name>Apache License 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+    </license>
+  </licenses>
 </project>
