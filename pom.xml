@@ -7,7 +7,7 @@
   </parent>
   <groupId>org.hudsonci.lib.guava</groupId>
   <artifactId>guava</artifactId>
-  <version>14.0.1-h-1-SNAPSHOT</version>
+  <version>14.0.1-h-1</version>
   <name>Guava: Google Core Libraries for Java</name>
   <url>http://hudson-ci.org/</url>
   <packaging>bundle</packaging>
