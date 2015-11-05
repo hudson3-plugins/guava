@@ -15,10 +15,10 @@
     Guava is a suite of core and expanded libraries that include
     utility classes, google's collections, io classes, and much
     much more.
- 
+
     Guava has two code dependencies - javax.annotation
     per the JSR-305 spec and javax.inject per the JSR-330 spec.
-    
+
     This is a fork of Guava 14.0.1 for Hudson.
   </description>
   <dependencies>
@@ -171,7 +171,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
-            <version>${maven-gpg-plugin.version}</version>
+            <version>1.6</version>
             <executions>
               <execution>
                 <id>sign-artifacts</id>
