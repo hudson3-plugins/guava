@@ -209,4 +209,9 @@
       <url>https://www.apache.org/licenses/LICENSE-2.0</url>
     </license>
   </licenses>
+  <scm>
+    <connection>scm:git:git://github.com/hudson3-plugins/guava.git</connection>
+    <developerConnection>scm:git:git@github.com:hudson3-plugins/guava.git</developerConnection>
+    <url>https://github.com/hudson3-plugins/guava</url>
+  </scm>
 </project>
